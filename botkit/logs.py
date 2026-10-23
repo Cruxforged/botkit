@@ -59,6 +59,18 @@ _SEP = " │ "
 
 _BANNER_COLOURS = ("\033[38;5;61m", "\033[38;5;69m", "\033[38;5;75m", "\033[38;5;111m", "\033[38;5;147m")
 
+
+def _centered(rows: list[str]) -> list[str]:
+    """Рисунок — по центру строки лога: LOG_WIDTH в .env, иначе ширина
+    терминала, у консоли хостинга (не терминал) — 100 колонок."""
+    import shutil
+
+    width = int(os.getenv("LOG_WIDTH", "0") or 0) or (shutil.get_terminal_size((100, 24)).columns if sys.stderr.isatty() else 100)
+    indent = min((len(r) - len(r.lstrip()) for r in rows if r.strip()), default=0)
+    rows = [r[indent:].rstrip() for r in rows]
+    pad = " " * max(0, (width - max((len(r) for r in rows), default=0)) // 2)
+    return [pad + r if r else r for r in rows]
+
 # Числа-ID Discord в строке лога заменяются на ник/канал/роль, если бот их знает.
 _SNOWFLAKE = re.compile(r"(?<![\w#@/.])\d{17,20}(?![\w/.])")
 _name_resolver = None
@@ -252,7 +264,7 @@ def setup_console(level: int = logging.INFO, *, app: str | None = None, banner: 
         pass
     colour = _colour_enabled(stream)
     if banner:
-        rows = banner_lines(banner)
+        rows = _centered(banner_lines(banner))
         if colour:
             step = max(1, -(-len(rows) // len(_BANNER_COLOURS)))
             rows = [f"{_BANNER_COLOURS[min(i // step, len(_BANNER_COLOURS) - 1)]}{row}{_RESET}" for i, row in enumerate(rows)]
