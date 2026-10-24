@@ -31,4 +31,5 @@
 - 2026-10-24 v0.1.0: первое ядро из Arion.
 
 ## Next / known issues
-- Arion и TournamentBot пока на своих копиях ядра — перевод ждёт решения владельца.
+- Arion берёт logs, loops, restart, watchdog, ansi; TournamentBot — logs. Оба ставят нужный тег сами (`BOTKIT_VERSION` в `core/__init__.py`) — новый тег = поднять версию там и в requirements.txt.
+- TournamentBot: свой restart (другой порядок остановки) — перевести, если botkit.restart получит `run_shutdown`.
